@@ -1,0 +1,17 @@
+{
+  "name": "si5b_kuis1_revalina",
+  "version": "1.0.0",
+  "description": "RESTful API Booking Lapangan",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [],
+  "author": "Reva Lina",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0"
+  }
+}
