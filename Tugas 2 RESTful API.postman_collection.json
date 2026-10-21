@@ -1,0 +1,338 @@
+{
+  "info": {
+    "_postman_id": "cd1d7c93-8949-49dd-98b2-a4757515198b",
+    "name": "Tugas 2 RESTful API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58487160",
+    "_collection_link": "https://go.postman.co/collection/58487160-cd1d7c93-8949-49dd-98b2-a4757515198b?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "CRUD",
+      "item": [
+        {
+          "name": "GET semua booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code adalah 200', function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test('Response berupa array', function () {\r\n    const jsonData = pm.response.json();\r\n    pm.expect(jsonData).to.be.an('array');\r\n});\r\n\r\npm.test('Setiap data memiliki id dan namaPemesan', function () {\r\n    const jsonData = pm.response.json();\r\n\r\n    jsonData.forEach((item) => {\r\n        pm.expect(item).to.have.property('id');\r\n        pm.expect(item).to.have.property('namaPemesan');\r\n    });\r\n});\r\n\r\npm.test('Response time di bawah 500ms', function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(500);\r\n});\r\n\r\npm.test('Data booking pertama dipesan oleh Tim Garuda SI', function () {\r\n    const jsonData = pm.response.json();\r\n    pm.expect(jsonData[0].namaPemesan).to.eql('Tim Garuda SI');\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/field-bookings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "field-bookings"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST tambah booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code adalah 201', function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\npm.test('Data baru memiliki id dan nama pemesan sesuai kiriman', function () {\r\n    const jsonData = pm.response.json();\r\n    const booking = jsonData.data;\r\n\r\n    pm.expect(booking).to.have.property('id');\r\n    pm.expect(booking.namaPemesan).to.eql('Reva Lina 2428240105');\r\n});\r\n\r\nif (pm.response.code === 201) {\r\n    const jsonData = pm.response.json();\r\n    pm.environment.set('bookingId', jsonData.data.id);\r\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"namaPemesan\": \"Reva Lina 2428240105\",\"lapangan\": \"Futsal C\",\"tanggal\": \"2026-10-15\",\"jamMulai\": \"20:00\",\"durasiJam\": 2\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/field-bookings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "field-bookings"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT ubah booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code adalah 200', function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test('Data booking berubah, nama pemesan tetap', function () {\r\n    const jsonData = pm.response.json();\r\n    const booking = jsonData.data;\r\n\r\n    pm.expect(booking.namaPemesan).to.eql('Andi Saputra');\r\n    pm.expect(booking.lapangan).to.eql('Futsal B');\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"namaPemesan\": \"Andi Saputra\",\"lapangan\": \"Futsal B\",\"tanggal\": \"2026-10-16\",\"jamMulai\": \"20:00\",\"durasiJam\": 3\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/field-bookings/{{bookingId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "field-bookings",
+                "{{bookingId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELATE hapus booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code adalah 204', function () {\r\n    pm.response.to.have.status(204);\r\n});\r\n\r\npm.test('Response tidak memiliki isi', function () {\r\n    pm.expect(pm.response.text()).to.eql('');\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/field-bookings/{{bookingId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "field-bookings",
+                "{{bookingId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET satu booking berdasarkan ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code adalah 200', function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test('Data booking sesuai ID dan nama pemesan', function () {\r\n    const jsonData = pm.response.json();\r\n    const booking = jsonData.data || jsonData;\r\n\r\n    pm.expect(booking.id).to.eql(2);\r\n    pm.expect(booking.namaPemesan).to.eql('Tim Elang');\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/field-bookings/2",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "field-bookings",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Skenario Gagal",
+      "item": [
+        {
+          "name": "POST tanpa API Key",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code adalah 401', function () {\r\n    pm.response.to.have.status(401);\r\n});\r\n\r\npm.test('Pesan error: API key tidak valid', function () {\r\n    pm.expect(pm.response.json().message).to.eql('API key tidak valid');\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/field-bookings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "field-bookings"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST data tidak lengkap",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code adalah 400', function () {\r\n    pm.response.to.have.status(400);\r\n});\r\n\r\npm.test('Pesan error menyebut data booking tidak lengkap', function () {\r\n    pm.expect(pm.response.json().message).to.eql('Data booking tidak lengkap');\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"namaPemesan\": \"Reva Lina\",\"lapangan\": \"Futsal C\",\"tanggal\": \"2026-10-20\",\"jamMulai\": \"20:00\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/field-bookings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "field-bookings"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST json rusak",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code adalah 400', function () {\r\n    pm.response.to.have.status(400);\r\n});\r\n\r\npm.test('Respons tetap berupa JSON, bukan HTML', function () {\r\n    pm.response.to.be.json;\r\n    pm.expect(pm.response.json().message).to.eql('Format JSON tidak valid');\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"namaPemesan\": \"Reva Lina\",\r\n  \"lapangan\": \"Futsal C\",",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/field-bookings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "field-bookings"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET ID tidak ditemukan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Pesan error: Data booking tidak ditemukan', function () {\r\n    const jsonData = pm.response.json();\r\n    pm.expect(jsonData.message).to.eql('Data booking tidak ditemukan');\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/field-bookings/99",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "field-bookings",
+                "99"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
