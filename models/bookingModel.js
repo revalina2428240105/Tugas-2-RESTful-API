@@ -1,105 +1,47 @@
-let fieldBookings = [
-    {
-        id: 1,
-        namaPemesan: "Tim Garuda SI",
-        lapangan: "Futsal A",
-        tanggal: "2026-10-10",
-        jamMulai: "19:00",
-        durasiJam: 2
-    },
-    {
-        id: 2,
-        namaPemesan: "Tim Elang",
-        lapangan: "Futsal B",
-        tanggal: "2026-10-11",
-        jamMulai: "16:00",
-        durasiJam: 2
-    },
-    {
-        id: 3,
-        namaPemesan: "Andi Saputra",
-        lapangan: "Badminton A",
-        tanggal: "2026-10-12",
-        jamMulai: "18:30",
-        durasiJam: 1
-    }
-];
 
-// GET semua data
-function getAll() {
-    return fieldBookings;
-}
+const mongoose = require('mongoose');
 
-// GET berdasarkan ID
-function getById(id) {
-    return fieldBookings.find((b) => b.id === id);
-}
+// Schema kecil untuk detail lapangan (Embedding)
+const lapanganSchema = new mongoose.Schema({
+  namaLapangan: String,
+  jenisLapangan: String,
+  hargaPerJam: Number,
+}, { _id: false });
 
-// FILTER berdasarkan lapangan
-function filterByLapangan(lapangan) {
-    return fieldBookings.filter(
-        (b) => b.lapangan.toLowerCase() === lapangan.toLowerCase()
-    );
-}
+// Schema utama booking
+const bookingSchema = new mongoose.Schema({
+  namaPemesan: {
+    type: String,
+    required: [true, 'nama pemesan wajib diisi'],
+    trim: true
+  },
+  tanggal: {
+    type: String,
+    required: [true, 'tanggal wajib diisi']
+  },
+  jamMulai: {
+    type: String,
+    required: [true, 'jam mulai wajib diisi']
+  },
+  durasiJam: {
+    type: Number,
+    required: [true, 'durasi jam wajib diisi'],
+    min: [1, 'durasi minimal 1 jam']
+  },
 
-// POST / tambah data
-function create(data) {
-    const newId = fieldBookings.length > 0
-        ? Math.max(...fieldBookings.map((b) => b.id)) + 1
-        : 1;
+  // Embedding: menyimpan detail lapangan langsung di booking
+  lapangan: lapanganSchema,
 
-    const baru = {
-        id: newId,
-        namaPemesan: data.namaPemesan,
-        lapangan: data.lapangan,
-        tanggal: data.tanggal,
-        jamMulai: data.jamMulai,
-        durasiJam: data.durasiJam
-    };
+  // Referencing: menyimpan ID dari koleksi Lapangan
+  lapanganId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Lapangan'
+  },
 
-    fieldBookings.push(baru);
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+});
 
-    return baru;
-}
-
-// PUT / ubah data
-function update(id, data) {
-    const index = fieldBookings.findIndex((b) => b.id === id);
-
-    if (index === -1) {
-        return null;
-    }
-
-    fieldBookings[index] = {
-        id: id,
-        namaPemesan: data.namaPemesan,
-        lapangan: data.lapangan,
-        tanggal: data.tanggal,
-        jamMulai: data.jamMulai,
-        durasiJam: data.durasiJam
-    };
-
-    return fieldBookings[index];
-}
-
-// DELETE / hapus data
-function remove(id) {
-    const index = fieldBookings.findIndex((b) => b.id === id);
-
-    if (index === -1) {
-        return false;
-    }
-
-    fieldBookings.splice(index, 1);
-
-    return true;
-}
-
-module.exports = {
-    getAll,
-    getById,
-    filterByLapangan,
-    create,
-    update,
-    remove
-};
+module.exports = mongoose.model('Booking', bookingSchema);

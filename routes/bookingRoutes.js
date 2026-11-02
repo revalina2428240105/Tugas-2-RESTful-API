@@ -1,20 +1,19 @@
+
 const express = require('express');
 const router = express.Router();
-
-const bookingController = require('../controllers/bookingController');
+const c = require('../controllers/bookingController');
 const cekApiKey = require('../middlewares/cekApiKey');
 
-// GET
-router.get('/', bookingController.getAll);
-router.get('/:id', bookingController.getById);
+// GET semua booking
+router.get('/', c.getAll);
 
-// POST
-router.post('/', cekApiKey, bookingController.create);
+// GET booking berdasarkan ID
+router.get('/:id', c.getById);
 
-// PUT
-router.put('/:id', cekApiKey, bookingController.update);
+// POST tambah booking (memerlukan API Key)
+router.post('/', cekApiKey, c.create);
 
-// DELETE
-router.delete('/:id', cekApiKey, bookingController.remove);
+// PUT update booking
+//router.put('/:id', cekApiKey, c.update);
 
 module.exports = router;

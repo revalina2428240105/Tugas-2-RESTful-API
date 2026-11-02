@@ -1,12 +1,15 @@
+
 require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
 
 const logger = require('./middlewares/logger');
 const { notFoundHandler, errorHandler } = require('./middlewares/errorHandler');
 
 const bookingRoutes = require('./routes/bookingRoutes');
+const lapanganRoutes = require('./routes/lapanganRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,10 +32,23 @@ app.get('/', (req, res) => {
 // ---------- Route booking ----------
 app.use('/field-bookings', bookingRoutes);
 
+// ---------- Route lapangan ----------
+app.use('/lapangan', lapanganRoutes);
+
 // ---------- Handler 404 dan error handler ----------
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-    console.log(`Server berjalan di http://localhost:${PORT}`);
-});
+// ---------- Koneksi MongoDB ----------
+mongoose.connect(process.env.DB_URI)
+    .then(() => {
+        console.log('MongoDB berhasil terhubung!');
+
+        app.listen(PORT, () => {
+            console.log(`Server berjalan di http://localhost:${PORT}`);
+        });
+    })
+    .catch((err) => {
+        console.error('Koneksi MongoDB gagal:', err.message);
+    });
+
